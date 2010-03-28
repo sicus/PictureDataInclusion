@@ -122,7 +122,7 @@ void MainDlgHandler::insertTextToImage() {
 	  x=0;
 	  y++;
 	}
-	QColor pixel(m_image->pixel(x,y));
+	pixel.setRgb(m_image->pixel(x,y));
       }
     }
   }
