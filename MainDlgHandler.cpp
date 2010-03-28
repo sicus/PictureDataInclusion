@@ -72,8 +72,11 @@ void MainDlgHandler::insertTextToImage() {
   bytesToWrite += '\0';
   QColor pixel(m_image->pixel(x,y));
   
-  for(int i=0; i < bytesToWrite.size(); i++){
-    currentChar = bytesToWrite[i];
+  for(int i=0; i < bytesToWrite.size()+1; i++){
+    if( i < bytesToWrite.size())
+      currentChar = bytesToWrite[i];
+    else
+      currentChar = 0x00;
     //printf("\nwrite byte: %02X %c\n",currentChar,currentChar);
     for(int j=7; j>=0; j--) {
       if( (0x01<<j) & currentChar ) {
