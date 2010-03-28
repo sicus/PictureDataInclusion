@@ -7,6 +7,8 @@
 #include <QMessageBox>
 #include "GeneratedFiles/ui_MainDlg.h"
 
+#define BT_STRING  "BT"
+#define BT_VERSION 0x01
 
 class MainDlgHandler : public QDialog
 {
@@ -23,6 +25,10 @@ class MainDlgHandler : public QDialog
     
   public slots:
     void loadFileBtnClicked();
+    void textChanged();
+    void insertTextToImage();
+    void extractTextFromImage();
+    void saveImage();
 };
 
 #endif
