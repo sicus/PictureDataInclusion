@@ -8,7 +8,11 @@
 #include "GeneratedFiles/ui_MainDlg.h"
 
 #define BT_STRING  "BT"
-#define BT_VERSION 0x01
+#define BT_VERSION 0x02
+
+// Data Types
+#define BT_TYPE_PLAINTEXT 0x01
+#define BT_TYPE_BINARY_FILE 0x02
 
 class MainDlgHandler : public QDialog
 {
@@ -17,6 +21,11 @@ class MainDlgHandler : public QDialog
     QString m_filename;
     QImage *m_image;
     Ui::MainDlg *m_mainDlg;
+    char m_imageVersion;
+    char m_imageType;
+    
+    void writeData(QByteArray bytesToWrite);
+    void readTextVersion1();
     
   public:
     MainDlgHandler();
@@ -29,6 +38,7 @@ class MainDlgHandler : public QDialog
     void insertTextToImage();
     void extractTextFromImage();
     void saveImage();
+    void insertFileBtnClicked();
 };
 
 #endif
