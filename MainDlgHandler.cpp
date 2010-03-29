@@ -10,6 +10,7 @@ MainDlgHandler::MainDlgHandler() {
   QObject::connect(m_mainDlg->saveImageBtn,SIGNAL(clicked()),this,SLOT(saveImage()));
   QObject::connect(m_mainDlg->extractTextBtn,SIGNAL(clicked()),this,SLOT(extractTextFromImage()));
   QObject::connect(m_mainDlg->insertFileBtn,SIGNAL(clicked()),this,SLOT(insertFileBtnClicked()));
+  QObject::connect(m_mainDlg->extractFileBtn,SIGNAL(clicked()),this,SLOT(extractFileFromImage()));
 }
 
 MainDlgHandler::~MainDlgHandler() {
@@ -36,7 +37,6 @@ void MainDlgHandler::loadFileBtnClicked() {
       m_mainDlg->extractTextBtn->setEnabled(false);
       m_mainDlg->extractFileBtn->setEnabled(false);
       
-      //char fileType;
       QByteArray header;
       int x = 0;
       int y = 0;
@@ -128,7 +128,10 @@ void MainDlgHandler::insertTextToImage() {
   bytesToWrite += BT_STRING;
   bytesToWrite += BT_VERSION;
   bytesToWrite += BT_TYPE_PLAINTEXT;
-  bytesToWrite += (char)0x0;
+  bytesToWrite += (char)0x00;
+  bytesToWrite += (char)0x00;
+  bytesToWrite += (char)0x00;
+  bytesToWrite += (char)0x00;
   bytesToWrite += m_mainDlg->textEditBox->toPlainText().toLocal8Bit();
   bytesToWrite += '\0';
   
@@ -204,8 +207,169 @@ void MainDlgHandler::extractTextFromImage() {
   if(m_imageVersion == 0x01) {
     readTextVersion1();
     return;
+  } else if(m_imageVersion == 0x02) {
+    if(m_imageType == BT_TYPE_PLAINTEXT) {
+      readTextVersion2();
+      return;
+    }
+  }
+}
+
+void MainDlgHandler::extractFileFromImage() {
+  if(m_imageVersion == 0x02) {
+    if(m_imageType == BT_TYPE_BINARY_FILE) {
+      readBinaryFileVersion2();
+      return;
+    }
+  }
+}
+
+void MainDlgHandler::readBinaryFileVersion2() {
+  QByteArray data;
+  QString outFileName;
+  bool gotFileName = false;
+  int imageSize = m_image->width() * m_image->height();
+  int x = 0;
+  int y = 0;
+  int color = 0;
+  unsigned char currentByte;
+  unsigned char bit=0x0;
+  int version = 0x0;
+  int binarySize = 0;
+  QString header = "";
+  
+  for(int i=0; i<imageSize; i++) {
+    currentByte = 0x0;
+    for(int j=0; j<8; j++) {
+      QColor pixel(m_image->pixel(x,y));
+      bit = 0x0;
+      if( color == 0 ) {
+	if( pixel.red() & 0x01 )
+	  bit = 0x01;
+      }else if(color == 1) {
+	if( pixel.green() & 0x01 )
+	  bit = 0x01;
+      } else if(color == 2) {
+	if( pixel.blue() & 0x01 )
+	  bit = 0x01;
+      }
+      
+      if(bit)
+	currentByte = currentByte | bit<<(7-j);
+      
+      
+      color++;
+      if(color > 2)
+      {
+	
+	color = 0;
+	x++;
+	if(x >= m_image->width()) {
+	  x=0;
+	  y++;
+	  if(x >= m_image->width() && y >= m_image->height()) {
+	    QMessageBox::critical(this,"Error extracting file", "Invalid size of File");
+	    return;
+	  }
+	}
+      }
+    }
+    
+    if(i < 2) {
+      header += currentByte;
+    }
+    else if(i == 2) {
+      version = (int)currentByte;
+    } else if(i >= 4 && i <= 7) {
+      binarySize = binarySize<<8;
+      binarySize += (int)currentByte;
+    }
+    
+    if(i >= 8) {
+      if(gotFileName) {
+	data += currentByte;
+      } else {
+	outFileName += currentByte;
+	if( currentByte == 0x0 ) {
+	  gotFileName = true;
+	  imageSize = binarySize + i +1;
+	}
+      }
+    }
+  } // for readData
+  
+  if(gotFileName) {
+    QString writeFileName = QFileDialog::getSaveFileName(this,"Save file As","./"+outFileName,"*");
+    if(!writeFileName.isNull()) {
+      QFile outFile(writeFileName);
+      outFile.open(QIODevice::WriteOnly);
+      outFile.write(data);
+      outFile.close();
+    }
+  }
+}
+
+void MainDlgHandler::readTextVersion2() {
+  QString text;
+  int imageSize = m_image->width() * m_image->height();
+  int x = 0;
+  int y = 0;
+  int color = 0;
+  unsigned char currentByte;
+  unsigned char bit=0x0;
+  int version = 0x0;
+  QString header = "";
+  
+  for(int i=0; i<imageSize; i++) {
+    currentByte = 0x0;
+    for(int j=0; j<8; j++) {
+      QColor pixel(m_image->pixel(x,y));
+      bit = 0x0;
+      if( color == 0 ) {
+	if( pixel.red() & 0x01 )
+	  bit = 0x01;
+      }else if(color == 1) {
+	if( pixel.green() & 0x01 )
+	  bit = 0x01;
+      } else if(color == 2) {
+	if( pixel.blue() & 0x01 )
+	  bit = 0x01;
+      }
+      
+      if(bit)
+	currentByte = currentByte | bit<<(7-j);
+      
+      
+      color++;
+      if(color > 2)
+      {
+	
+	color = 0;
+	x++;
+	if(x >= m_image->width()) {
+	  x=0;
+	  y++;
+	}
+      }
+    }
+    
+    if(i < 2) {
+      header += currentByte;
+    }
+    else if(i == 2) {
+      version = (int)currentByte;
+    }
+    
+    if(i >= 8) {
+      if(currentByte != 0x0)
+	text += currentByte;
+      if(currentByte == 0x0) {
+	break;
+      }
+    }
   }
   
+  m_mainDlg->textEditBox->setPlainText(text);
 }
 
 void MainDlgHandler::readTextVersion1() {
@@ -307,14 +471,29 @@ void MainDlgHandler::insertFileBtnClicked() {
     return;
   }
   
+  unsigned int filesize = (unsigned int)inputFile.size();
+  
   QByteArray bytesToWrite;
   bytesToWrite += BT_STRING;
   bytesToWrite += BT_VERSION;
   bytesToWrite += BT_TYPE_BINARY_FILE;
-  bytesToWrite += (int)inputFile.size();
+  
+  char tmp[4];
+  tmp[0] = 0x00;
+  tmp[1] = 0x00;
+  tmp[2] = 0x00;
+  tmp[3] = 0x00;
+  memcpy(tmp,&filesize,4);
+  bytesToWrite += tmp[3];
+  bytesToWrite += tmp[2];
+  bytesToWrite += tmp[1];
+  bytesToWrite += tmp[0];
+  
   bytesToWrite += insertFileNamePlain.toLocal8Bit();
   bytesToWrite += '\0';
   bytesToWrite += inputFile.readAll();
+  
+  QMessageBox::information(this,"bla",QString::number((int)inputFile.size()));
   
   inputFile.close();
   writeData(bytesToWrite);

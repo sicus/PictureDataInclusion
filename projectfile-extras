@@ -1,3 +1,4 @@
 MOC_DIR = GeneratedFiles
 OBJ_DIR = obj
 UI_DIR = GeneratedFiles
+OBJECTS_DIR = obj

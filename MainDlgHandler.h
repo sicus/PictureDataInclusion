@@ -26,6 +26,8 @@ class MainDlgHandler : public QDialog
     
     void writeData(QByteArray bytesToWrite);
     void readTextVersion1();
+    void readTextVersion2();
+    void readBinaryFileVersion2();
     
   public:
     MainDlgHandler();
@@ -39,6 +41,7 @@ class MainDlgHandler : public QDialog
     void extractTextFromImage();
     void saveImage();
     void insertFileBtnClicked();
+    void extractFileFromImage();
 };
 
 #endif

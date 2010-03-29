@@ -8,6 +8,7 @@ DEPENDPATH += . GeneratedFiles
 INCLUDEPATH += . GeneratedFiles
 MOC_DIR = GeneratedFiles
 UI_DIR = GeneratedFiles
+OBJECTS_DIR = obj
 
 # Input
 HEADERS += MainDlgHandler.h
