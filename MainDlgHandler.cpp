@@ -454,6 +454,7 @@ void MainDlgHandler::insertFileBtnClicked() {
     QMessageBox::critical(this,"Unable to open file","Unable to open File");
   }
   
+  // path abschneiden
   QString insertFileNamePlain = insertFileName.right(insertFileName.size() - insertFileName.lastIndexOf("/") -1);
   
   int imageSize = m_image->width() * m_image->height();
