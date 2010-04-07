@@ -1,0 +1,34 @@
+1.0 Dependencies
+
+1.1 Linux:
+Just install the Qt Library 4.5 or higher
+
+1.2 Windows:
+Install MinGW 32 and the Qt Library 4.5 or higher.
+
+
+2.0 Howto Build this Project
+
+2.1 Linux:
+run the following two commands to run:
+qmake -makefile
+make
+
+now you can start the binary programm, have fun :)
+
+2.2 Windows:
+Make sure that MinGW32/bin and the Qt/bin directories is in the PATH environment variable.
+Make sure that an environenment variable QTDIR exists and Points to the directory Qt is installed in.
+Compile the Program with the following commands from an command shell (Start -> run -> cmd).
+
+qmake -makefile
+make
+
+Now you should have a release version in the release subdirectory and a debug version in the debug
+subdirectory in the project directory.
+
+To run this programm on different computers (without installed MinGW32 and Qt) you have to put the
+following file to the .exe binary:
+mingwm10.dll   (you can find it in the MinGW/bin directory)
+QtCore4.dll    (You find the files in the Qt/bin directory)
+QtGui4.dll
