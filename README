@@ -10,19 +10,20 @@ Install MinGW 32 and the Qt Library 4.5 or higher.
 2.0 Howto Build this Project
 
 2.1 Linux:
-run the following two commands to run:
+run the following two commands to build:
 qmake -makefile
 make
 
 now you can start the binary programm, have fun :)
 
 2.2 Windows:
-Make sure that MinGW32/bin and the Qt/bin directories is in the PATH environment variable.
-Make sure that an environenment variable QTDIR exists and Points to the directory Qt is installed in.
+Make sure that MinGW32/bin and the Qt/bin directories are in the PATH environment variable.
+Make sure that an environenment variable QTDIR exists and points to the directory Qt is installed in.
 Compile the Program with the following commands from an command shell (Start -> run -> cmd).
 
 qmake -makefile
-make
+make release
+make debug
 
 Now you should have a release version in the release subdirectory and a debug version in the debug
 subdirectory in the project directory.

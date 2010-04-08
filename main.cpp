@@ -1,3 +1,11 @@
+/*
+ * File: main.cpp
+ * Author: Markus Biggel
+ * Date: 2007-03-27
+ * License: GPL v3
+ *
+*/
+
 #include <QtCore>
 #include <QtGui>
 #include <QDialog>

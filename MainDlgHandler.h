@@ -1,3 +1,11 @@
+/*
+ * File: MainDlgHandler.h
+ * Author: Markus Biggel
+ * Date: 2007-03-27
+ * License: GPL v3
+ *
+*/
+
 #ifndef MAINDLGHANDLER_H
 #define MAINDLGHANDLER_H
 
